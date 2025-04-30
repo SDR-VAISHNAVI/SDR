@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <title>Bell Control Panel</title>
+    <style>
+        body {
+            background-color: #111;
+            color: #ff3b3b;
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        .toggle-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #ff3b3b;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    background-color: #ccc;
+    border-radius: 34px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: 0.4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.4s;
+}
+.toggle-box {
+    background-color: #1a1a1a;
+    border: 2px solid #ff3b3b;
+    color: #ff3b3b;
+    padding: 20px;
+    font-size: 1.1em;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.toggle-box:hover {
+    background-color: #2a2a2a;
+    transform: translateY(-3px);
+}
+
+input:checked + .slider {
+    background-color: #ff3b3b;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+        .grid-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    max-width: 800px;
+    margin: auto;
+}
+
+.grid-buttons button {
+    background-color: #1a1a1a;
+    border: 2px solid #ff3b3b;
+    color: #ff3b3b;
+    padding: 20px;
+    font-size: 1.1em;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.grid-buttons button:hover {
+    background-color: #2a2a2a;
+    transform: translateY(-3px);
+}
+
+.grid-buttons button i {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #ff3b3b;
+}
+
+.message {
+    margin-top: 30px;
+    padding: 15px;
+    background-color: #222;
+    color: #ff3b3b;
+    border: 1px solid #ff3b3b;
+    border-radius: 10px;
+    font-size: 1.2em;
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+        h1 {
+            font-size: 3em;
+            margin-bottom: 40px;
+        }
+
+        button {
+            background-color: #ff3b3b;
+            color: #ffffff;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background 0.3s, transform 0.2s;
+            width:95%;
+        }
+
+        button:hover {
+            background-color: #ff3b3b;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.85);
+        }
+
+        .modal-content {
+            background-color: #222;
+            color: #ff3b3b;
+            margin: 10% auto;
+            padding: 20px;
+            border: 2px solid #f00;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 600px;
+            text-align: left;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            color: #f00;
+            font-size: 24px;
+            cursor: pointer;
+        }
+a {
+        text-decoration: none;
+    }
+        input[type="number"] {
+            width: 95%;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 1em;
+            background: #111;
+            border: 1px solid #ffffff;
+            color: #ff3b3b;
+            border-radius: 8px;
+        }
+
+        .modal button {
+            margin-top: 20px;
+            width: 95%;
+            
+        }
+
+        pre {
+            white-space: pre-wrap;
+            font-family: monospace;
+            background-color: #000;
+            padding: 10px;
+            border-radius: 8px;
+            color: #f88;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+
+
+</head>
+<body>
+    <h1> Create Your Own Pattern </h1>
+
+
+<form method="POST"> 
+<div class="grid-buttons">
+<button name="action" value="record" title="record">
+        <i class="fa-solid fa-microphone"></i>
+        Record
+    </button>
+    <button name="action" value="stop" title="stop">
+        <i class="fa-solid fa-stop icon-button""></i>
+        Stop
+    </button>
+    <button name="action" value="transmit" title="Transmit">
+        <i class="fas fa-broadcast-tower"></i>
+        Transmission
+    </button>
+
+ <a href="/" class="white-btn">
+    <button type="button"><i class="fa-solid fa-house"></i>Back to Home</button>
+</a>
+</div>
+
+     </div>   </div></form>
+    
+ 
+    {% if message %}
+    <div class="message">{{ message }}</div>
+  {% endif %}
+  
+
+    <hr></body>
+</html>
+

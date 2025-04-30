@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FM Transmitter - Playlist</title>
+
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Lato', sans-serif;
+      background-color: #121212;  /* Dark background */
+      color: #ffffff; /* Light text color */
+      padding: 50px;
+      text-align: center;
+      justify-content: flex-start;
+      height: 100vh;
+    }
+
+    h1 {
+      color: #ffffff;  /* White text color */
+      margin-bottom: 40px;
+    }
+
+    /* Info section container to hold both Now Playing and Queue */
+    .info-section-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 68%;
+      margin: 30px auto;
+    }
+
+    /* Now Playing section */
+    .now-playing {
+      background: #333333;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      display: block;
+      text-align: left;
+      max-height: 250px;
+      overflow: hidden; /* No scrolling */
+      margin-bottom: 10px; /* Adds space between Now Playing and Queue */
+    }
+
+    /* Upcoming Songs (Queue) section */
+    .queue {
+      background: #333333;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      display: block;
+      text-align: left;
+      max-height: 150px;
+      overflow-y: auto; /* Allows scrolling */
+      margin-top: 20px;
+    }
+
+    .queue ul {
+      list-style-type: none;  /* Removes the bullets */
+      padding: 0;
+      margin: 0;
+      font-size: 18px;  /* Change font size */
+      font-family: 'Poppins', sans-serif; /* Change font family */
+    }
+
+    .queue li {
+      padding: 5px 0;
+    }
+
+    input[type="file"], input[type="text"] {
+      margin: 1rem 0;
+      padding: 8px;
+      width: 90%;
+      border: 1px solid #333;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      color: #e0e0e0;
+      background-color: #333;
+      transition: border-color 0.3s ease;
+    }
+
+    /* Controls button alignment */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin: 30px 0;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .controls form {
+      background: #1f1f1f;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .controls form:hover {
+      transform: scale(1.05);
+    }
+
+    input[type="file"] {
+      display: none; /* hide upload input */
+    }
+
+    button {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 10px;
+    }
+
+    .icon-button {
+      font-size: 40px;
+      color: #ffffff;  /* Yellow color for better visibility */
+      transition: 0.3s;
+    }
+
+    .icon-button:hover {
+      color: #ff3b3b; /* White color on hover for better visibility */
+      transform: scale(1.2);
+    }
+a {
+        text-decoration: none;
+    }
+    .message, .error {
+      font-size: 18px;
+      margin-top: 20px;
+      text-align: center;
+      padding: 15px;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 600px;
+margin: 20px auto;  /* Centers the message block horizontally */
+  display: flex;
+  justify-content: center; /* Horizontally center the content */
+  align-items: center; /* Vertically center the content */
+  
+    }
+
+    .message {
+      background-color: #388e3c;
+      color: #ffffff;
+    }
+
+    .error {
+      background-color: #f44336;
+      color: #ffffff;
+    }
+
+    /* Horizontal line */
+    hr {
+      margin: 50px 0;
+      border: 1px solid #ffffff; /* White border */
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <h1>FM Transmission Control Panel</h1>
+
+  <!-- Controls Section (only icons) -->
+  <div class="controls">
+    <!-- Upload Button -->
+    <form action="/queue_upload" method="post" enctype="multipart/form-data">
+      <label for="file-upload">
+        <i class="fa-solid fa-folder-plus icon-button" title="Upload Files to Queue"></i>
+      </label>
+      <input id="file-upload" type="file" name="files" multiple onchange="this.form.submit()">
+    </form>
+    
+    <!-- Set Frequency Form -->
+    <form action="/set_frequency" method="post">
+      <input type="text" name="frequency" placeholder="Enter frequency" required></form>
+     
+
+    <!-- Play Button -->
+    <form action="/start_queue" method="post">
+      <button type="submit" title="Play Playlist">
+        <i class="fa-solid fa-play icon-button"></i>
+      </button>
+    </form>
+
+    <!-- Stop Button -->
+    <form action="/stop" method="post">
+      <button type="submit" title="Stop Transmission">
+        <i class="fa-solid fa-stop icon-button"></i>
+      </button>
+    </form>
+
+    <!-- Next Button -->
+    <form action="/next_in_queue" method="post">
+      <button type="submit" title="Next Song">
+        <i class="fa-solid fa-forward icon-button"></i>
+      </button>
+    </form>
+
+    <!-- Clear Queue Button -->
+    <form action="/clear_queue" method="post">
+      <button type="submit" title="Clear Queue">
+        <i class="fa-solid fa-trash icon-button"></i>
+      </button>
+    </form>
+<form action="/" method="post">
+    <button type="submit" title="Home">
+    <i class="fa-solid fa-house icon-button"></i>
+    </button>
+</form>
+  </div>
+  <!-- Now Playing and Queue Section -->
+  <div class="info-section-container">
+    <!-- Now Playing Section -->
+    <div class="now-playing">
+      <h2>Now Playing</h2>
+      {% if current_song %}
+        <p><strong>{{ current_song.split('.')[0] }}</strong></p> <!-- Remove .mp3 extension -->
+      {% else %}
+        <p>No song is currently playing.</p>
+      {% endif %}
+    </div>
+
+    <!-- Upcoming Songs (Queue) Section -->
+    <div class="queue">
+      <h2>Upcoming Songs</h2>
+      {% if queue %}
+        <ul>
+          {% for song in queue %}
+            <li>{{ song.split('.')[0] }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Queue is empty.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Message and Error Display (below Queue) -->
+  {% if message %}
+    <div class="message">{{ message }}</div>
+  {% endif %}
+
+ <hr>
+
+</body>
+</html>
+

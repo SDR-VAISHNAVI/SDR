@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <title>Bell Control Panel</title>
+    <style>
+        body {
+            background-color: #111;
+            color: #ff3b3b;
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        .toggle-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #ff3b3b;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    background-color: #ccc;
+    border-radius: 34px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: 0.4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.4s;
+}
+.toggle-box {
+    background-color: #1a1a1a;
+    border: 2px solid #ff3b3b;
+    color: #ff3b3b;
+    padding: 20px;
+    font-size: 1.1em;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.toggle-box:hover {
+    background-color: #2a2a2a;
+    transform: translateY(-3px);
+}
+
+input:checked + .slider {
+    background-color: #ff3b3b;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+        .grid-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    max-width: 800px;
+    margin: auto;
+}
+
+.grid-buttons button {
+    background-color: #1a1a1a;
+    border: 2px solid #ff3b3b;
+    color: #ff3b3b;
+    padding: 20px;
+    font-size: 1.1em;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.grid-buttons button:hover {
+    background-color: #2a2a2a;
+    transform: translateY(-3px);
+}
+
+.grid-buttons button i {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #ff3b3b;
+}
+
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 40px;
+        }
+
+        button {
+            background-color: #ff3b3b;
+            color: #ffffff;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background 0.3s, transform 0.2s;
+            width:95%;
+        }
+
+        button:hover {
+            background-color: #ff3b3b;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.85);
+        }
+
+        .modal-content {
+            background-color: #222;
+            color: #ff3b3b;
+            margin: 10% auto;
+            padding: 20px;
+            border: 2px solid #f00;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 600px;
+            text-align: left;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            color: #f00;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        input[type="number"] {
+            width: 95%;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 1em;
+            background: #111;
+            border: 1px solid #ffffff;
+            color: #ff3b3b;
+            border-radius: 8px;
+        }
+
+        .modal button {
+            margin-top: 20px;
+            width: 95%;
+            
+        }
+
+        pre {
+            white-space: pre-wrap;
+            font-family: monospace;
+            background-color: #000;
+            padding: 10px;
+            border-radius: 8px;
+            color: #f88;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+
+    <script>
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            speechSynthesis.speak(utterance);
+        }
+
+        function startTransmission() {
+            fetch("/start_transmission", { method: "POST" })
+                .then(res => res.json())
+                .then(data => {
+                    speak(data.message);
+                    alert(data.message);
+                });
+        }
+
+        function clearLog() {
+            fetch("/clear_log", { method: "POST" }).then(() => {
+                speak("Log cleared");
+                alert("Log cleared");
+            });
+        }
+
+        function toggleLog() {
+            fetch("/toggle_log", { method: "POST" })
+                .then(response => response.json())
+        .then(data => {
+            const isActive = data.log_active;
+            document.getElementById("logToggle").checked = isActive;
+            document.getElementById("toggleLabel").textContent = isActive ? "Log ON" : "Log OFF";
+            speakText(isActive ? "Log started" : "Log stopped");
+        });
+}
+
+// On load, sync toggle with current state
+window.onload = () => {
+    fetch("/toggle_log", { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("logToggle").checked = data.log_active;
+            document.getElementById("toggleLabel").textContent = data.log_active ? "Log ON" : "Log OFF";
+        });
+};
+
+
+        function stopLogForMinutes() {
+            document.getElementById("minutesModal").style.display = "block";
+        }
+
+        function submitMinutes() {
+            const minutes = document.getElementById("minutesInput").value;
+            if (!minutes) return;
+            fetch("/stop_log_minutes", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "minutes=" + minutes
+            }).then(() => {
+                const msg = `Logging stopped for ${minutes} minutes`;
+                speak(msg);
+                closeModal("minutesModal");
+                alert(msg);
+            });
+        }
+
+        function getLog() {
+            fetch("/get_log")
+                .then(res => res.json())
+                .then(data => {
+                    const log = data.entries.join("");
+                    document.getElementById("logContent").innerText = log || "No log entries.";
+                    document.getElementById("logModal").style.display = "block";
+                    speak("Here are the log entries.");
+                });
+        }
+
+        function scheduleTransmission() {
+            const delay = prompt("Enter delay in seconds for scheduled transmission:");
+            fetch("/schedule_transmission", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "delay=" + delay
+            }).then(() => {
+                const msg = `Scheduled transmission in ${delay} seconds`;
+                speak(msg);
+                alert(msg);
+            });
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
+         function goHome() {
+            window.location.href = "/";
+        }
+    </script>
+</head>
+<body>
+    <h1> Bell Control Panel </h1>
+
+   
+    <!-- Modal for Stop Log Minutes -->
+    <div id="minutesModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('minutesModal')">&times;</span>
+            <h2>Stop Logging</h2>
+            <label for="minutesInput">Enter minutes to pause logging:</label>
+            <input type="number" id="minutesInput" min="1" placeholder="e.g., 5">
+            <button onclick="submitMinutes()">Submit</button>
+        </div>
+    </div>
+<div class="grid-buttons">
+    <button onclick="startTransmission()" title="Start Transmission">
+        <i class="fas fa-broadcast-tower"></i>
+        Start Transmission
+    </button>
+
+    <button onclick="clearLog()" title="Clear Log">
+        <i class="fas fa-trash-alt"></i>
+        Clear Log
+    </button>
+    
+<button class="toggle-button">
+    
+    <label class="switch">
+        <input type="checkbox" id="logToggle" onchange="toggleLog()">
+        <span class="slider round"></span>
+    </label><br>
+    <span id="toggleLabel">Log OFF</span>
+    
+</button>
+   
+
+
+    <button onclick="stopLogForMinutes()" title="Stop Log for Minutes">
+        <i class="fas fa-clock"></i>
+        Stop Log (Min)
+    </button>
+
+    <button onclick="getLog()" title="View Log">
+        <i class="fas fa-file-alt"></i>
+        View Log
+    </button>
+
+    <button onclick="scheduleTransmission()" title="Schedule Transmission">
+        <i class="fas fa-calendar-plus"></i>
+        Schedule Tx
+    </button>
+    <button onclick="goHome()" class="white-btn"><i class="fa-solid fa-house"></i>Back to Home</button>
+</div>
+
+    <!-- Modal for Log Display -->
+    <div id="logModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('logModal')">&times;</span>
+            <h2>Log Entries</h2>
+            <pre id="logContent">Loading...</pre>
+        </div>
+    </div>
+</body>
+</html>
+
